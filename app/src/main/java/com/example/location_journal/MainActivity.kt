@@ -15,8 +15,11 @@ import com.example.location_journal.ui.theme.NavBar
 import com.example.location_journal.ui.theme.Navigation
 import com.example.location_journal.ui.theme.LocationJournalTheme
 import androidx.compose.foundation.layout.Box
+import com.example.location_journal.viewmodel.JournalViewModel
+import androidx.activity.viewModels
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: JournalViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        Navigation(navController = navController)
+                        Navigation(navController = navController, viewModel = viewModel)
                     }
                 }
             }
