@@ -62,7 +62,7 @@ fun JournalEntryScreen(viewModel: JournalViewModel) {
                     val currentDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date())
                     val entry = JournalEntryItem(
                         date = currentDate,
-                        mood = "", // get somehow
+                        mood = "", // analysis
                         text = text,
                         location = location
                     )
