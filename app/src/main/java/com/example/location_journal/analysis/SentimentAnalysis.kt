@@ -1,5 +1,6 @@
 package com.example.location_journal.analysis
 
+import com.example.location_journal.BuildConfig
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,12 +15,12 @@ object SentimentAnalyzer {
 
     private const val BASE_URL = "https://api-inference.huggingface.co/"
     private const val MODEL = "j-hartmann/emotion-english-distilroberta-base"
-    private const val API_TOKEN = "Bearer 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"
+    val apiKey = BuildConfig.HUGGINGFACE_API_KEY
 
     private val api: HuggingFaceApi by lazy {
         val client = OkHttpClient.Builder().addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", API_TOKEN)
+                .addHeader("Authorization", apiKey)
                 .build()
             chain.proceed(request)
         }.build()
