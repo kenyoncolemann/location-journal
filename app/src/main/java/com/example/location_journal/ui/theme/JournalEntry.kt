@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -15,10 +16,16 @@ import androidx.compose.ui.unit.dp
 import com.example.location_journal.data.JournalEntryItem
 import com.example.location_journal.data.UserEntryItem
 import com.example.location_journal.viewmodel.JournalViewModel
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import android.location.Geocoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -32,7 +39,12 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
 
     LaunchedEffect(Unit) {
         getLocation(context) { loc ->
-            location = "${loc.latitude}, ${loc.longitude}"
+            coroutineScope.launch {
+                val name = withContext(Dispatchers.IO) {
+                    getLocationName(context, loc.latitude, loc.longitude)
+                }
+                location = name
+            }
         }
     }
 
@@ -60,6 +72,12 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
 
             Button(
                 onClick = {
+                    if (location == "Fetching location...") {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Still fetching location. Please wait...")
+                        }
+                        return@Button
+                    }
                     val currentDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date())
                     val entry = JournalEntryItem(
                         userId = user.id,
@@ -91,6 +109,45 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
 fun getLocation(context: Context, onLocationFound: (Location) -> Unit) {
     val fusedClient = LocationServices.getFusedLocationProviderClient(context)
     fusedClient.lastLocation.addOnSuccessListener { location: Location? ->
-        location?.let { onLocationFound(it) }
+        if (location != null) {
+            Log.d("LocationDebug", "Got location: ${location.latitude}, ${location.longitude}")
+            onLocationFound(location)
+        } else {
+            Log.w("LocationDebug", "lastLocation is null")
+
+            // Fallback: try to actively request location
+            fusedClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                null
+            ).addOnSuccessListener { newLoc ->
+                if (newLoc != null) {
+                    Log.d("LocationDebug", "Fetched new location: ${newLoc.latitude}, ${newLoc.longitude}")
+                    onLocationFound(newLoc)
+                } else {
+                    Log.e("LocationDebug", "Still couldn't get location")
+                }
+            }.addOnFailureListener {
+                Log.e("LocationDebug", "Failed to get current location", it)
+            }
+        }
+    }.addOnFailureListener {
+        Log.e("LocationDebug", "lastLocation failed", it)
+    }
+}
+
+
+fun getLocationName(context: Context, lat: Double, lon: Double): String {
+    return try {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val addresses = geocoder.getFromLocation(lat, lon, 1)
+        if (!addresses.isNullOrEmpty()) {
+            val address = addresses[0]
+            listOfNotNull(address.locality, address.adminArea).joinToString(", ")
+        } else {
+            "Unknown location"
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        "Unknown location"
     }
 }
