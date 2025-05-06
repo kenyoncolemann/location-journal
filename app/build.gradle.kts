@@ -15,7 +15,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-        val apiKey: String = project.findProperty("HUGGINGFACE_API_KEY") as? String ?: ""
         buildConfigField("String", "HUGGINGFACE_API_KEY", "\"${project.findProperty("HUGGINGFACE_API_KEY") ?: ""}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
