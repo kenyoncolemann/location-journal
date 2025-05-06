@@ -6,8 +6,12 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "journal_entries")
 data class JournalEntryItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val userId: Int,
     val date: String,
-    val mood: String,
+    val happy: Double,
+    val sad: Double,
+    val angry: Double,
+    val surprised: Double,
     val text: String,
     val location: String
 )

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [JournalEntryItem::class], version = 1, exportSchema = false)
+@Database(entities = [JournalEntryItem::class], version = 3, exportSchema = false)
 abstract class JournalDatabase : RoomDatabase() {
     abstract fun journalDao(): JournalDao
 
@@ -19,7 +19,9 @@ abstract class JournalDatabase : RoomDatabase() {
                     context.applicationContext,
                     JournalDatabase::class.java,
                     "journal_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // ✅ Automatically resets DB if schema changes
+                    .build()
                 INSTANCE = instance
                 instance
             }

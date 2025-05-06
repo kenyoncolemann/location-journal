@@ -6,13 +6,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.location_journal.ProfileScreen
 import com.example.location_journal.viewmodel.JournalViewModel
-
+import com.example.location_journal.data.UserEntryItem
 
 @Composable
-fun Navigation(navController: NavHostController, viewModel: JournalViewModel) {
+fun Navigation(
+    navController: NavHostController,
+    viewModel: JournalViewModel,
+    currentUser: UserEntryItem // ✅ Accept the user passed from MainActivity
+) {
     NavHost(navController = navController, startDestination = "journal") {
-        composable("journal") { JournalEntryScreen(viewModel = viewModel) }
-        composable("heatmap") { HeatMapScreen(viewModel = viewModel) }
-        composable("profile") { ProfileScreen(viewModel = viewModel) }
+        composable("journal") {
+            JournalEntryScreen(viewModel = viewModel, user = currentUser)
+        }
+        composable("heatmap") {
+            HeatMapScreen(viewModel = viewModel, user = currentUser)
+        }
+        composable("profile") {
+            ProfileScreen(viewModel = viewModel, user = currentUser)
+        }
     }
 }

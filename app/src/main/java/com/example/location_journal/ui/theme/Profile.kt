@@ -14,14 +14,15 @@ import com.example.location_journal.viewmodel.JournalViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.location_journal.data.JournalEntryItem
+import com.example.location_journal.data.UserEntryItem
 
 
 @Composable
-fun ProfileScreen(viewModel: JournalViewModel) {
-    val entries by viewModel.entries.collectAsState()
+fun ProfileScreen(viewModel: JournalViewModel, user: UserEntryItem) {
+    val entries by viewModel.getEntriesForUser(user.id).collectAsState(initial = emptyList())
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Username", style = MaterialTheme.typography.headlineMedium)
+        Text(user.username, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text("Your saved journal entries:", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(16.dp))
@@ -30,7 +31,7 @@ fun ProfileScreen(viewModel: JournalViewModel) {
             items(entries) { entry ->
                 JournalEntryCard(
                     entry = entry,
-                    onDelete = { viewModel.deleteEntry(entry) }
+                    onDelete = { viewModel.deleteEntry(entry) },
                 )
             }
         }
@@ -56,8 +57,9 @@ fun JournalEntryCard(entry: JournalEntryItem, onDelete: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary
                 )
+
                 Text(
-                    text = entry.mood,
+                    text = getTopMood(entry),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -74,4 +76,15 @@ fun JournalEntryCard(entry: JournalEntryItem, onDelete: () -> Unit) {
             }
         }
     }
+}
+
+fun getTopMood(entry: JournalEntryItem): String {
+    val moods = listOf(
+        "Happy" to entry.happy,
+        "Sad" to entry.sad,
+        "Angry" to entry.angry,
+        "Surprised" to entry.surprised
+    )
+    val top = moods.maxByOrNull { it.second }
+    return if (top != null) "${top.first} (${String.format("%.2f", top.second)})" else "No mood"
 }

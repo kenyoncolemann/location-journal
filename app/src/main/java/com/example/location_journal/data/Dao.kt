@@ -13,4 +13,22 @@ interface JournalDao {
 
     @Delete
     suspend fun deleteEntry(entry: JournalEntryItem)
+
+    @Query("SELECT * FROM journal_entries WHERE userId = :userId")
+    fun getEntriesForUser(userId: Int): Flow<List<JournalEntryItem>>
+}
+
+@Dao
+interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEntry(entry: UserEntryItem)
+
+    @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
+    fun login(username: String, password: String): UserEntryItem?
+
+    @Query("SELECT * FROM users")
+    fun getAllEntries(): Flow<List<UserEntryItem>>
+
+    @Delete
+    suspend fun deleteEntry(entry: UserEntryItem)
 }

@@ -53,3 +53,43 @@ suspend fun requestHeatmapFromServer(): Bitmap = withContext(Dispatchers.IO) {
         throw e
     }
 }
+
+suspend fun requestAbsaMoodList(journalText: String): List<Double> = withContext(Dispatchers.IO) {
+    val client = OkHttpClient()
+
+    try {
+        val payload = JSONObject().apply {
+            put("text", journalText)
+        }
+
+        val requestBody = RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            payload.toString()
+        )
+
+        val request = Request.Builder()
+            .url("http://10.0.2.2:5050/absa")
+            .post(requestBody)
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        if (!response.isSuccessful) {
+            throw Exception("Request failed with code ${response.code}")
+        }
+
+        val responseString = response.body?.string()
+            ?: throw Exception("Empty response body")
+
+        val json = JSONObject(responseString)
+        val dataArray = json.getJSONArray("Data")
+
+        return@withContext List(dataArray.length()) { i ->
+            dataArray.getDouble(i)
+        }
+
+    } catch (e: Exception) {
+        Log.e("AbsaClient", "Error requesting ABSA", e)
+        throw e
+    }
+}

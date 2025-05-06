@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.location_journal.data.JournalEntryItem
+import com.example.location_journal.data.UserEntryItem
 import com.example.location_journal.viewmodel.JournalViewModel
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ import java.util.*
 
 @SuppressLint("MissingPermission")
 @Composable
-fun JournalEntryScreen(viewModel: JournalViewModel) {
+fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
     val context = LocalContext.current
     var text by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("Fetching location...") }
@@ -61,8 +62,12 @@ fun JournalEntryScreen(viewModel: JournalViewModel) {
                 onClick = {
                     val currentDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date())
                     val entry = JournalEntryItem(
+                        userId = user.id,
                         date = currentDate,
-                        mood = "", // analysis func
+                        happy = 0.0,
+                        sad = 0.0,
+                        angry = 0.0,
+                        surprised = 0.0,
                         text = text,
                         location = location
                     )
