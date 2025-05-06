@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.location_journal.ui.theme.*
 import com.example.location_journal.viewmodel.JournalViewModel
 import com.example.location_journal.viewmodel.UserViewModel
+import android.Manifest
 
 class MainActivity : ComponentActivity() {
     private val journalViewModel: JournalViewModel by viewModels()
@@ -24,7 +25,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        if (hasLocationPermissions()) {
+            launchAppContent()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
 
+    private fun hasLocationPermissions(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun launchAppContent() {
         setContent {
             LocationJournalTheme {
                 val navController = rememberNavController()
@@ -53,5 +75,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
+            grantResults.isNotEmpty() &&
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
+            launchAppContent()
+        } else {
+            // You could show an error or close the app
+        }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 }
