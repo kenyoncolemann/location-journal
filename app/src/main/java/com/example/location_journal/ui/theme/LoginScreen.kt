@@ -11,11 +11,12 @@ import androidx.compose.ui.unit.dp
 import com.example.location_journal.data.UserDao
 import com.example.location_journal.data.UserEntryItem
 
+// login screen ui and logic
 @Composable
 fun LoginScreen(
     userDao: UserDao,
-    onLogin: (UserEntryItem) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onLogin: (UserEntryItem) -> Unit, // callback for successful login
+    onNavigateToRegister: () -> Unit // callback to registration
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -27,11 +28,13 @@ fun LoginScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        // inputs
         OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Username") })
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") })
 
         Spacer(Modifier.height(16.dp))
 
+        // login button
         Button(onClick = {
             scope.launch {
                 val user = withContext(Dispatchers.IO) {
@@ -48,6 +51,7 @@ fun LoginScreen(
             Text("Log In")
         }
 
+        // button to go to registration screen
         TextButton(onClick = onNavigateToRegister) {
             Text("Don't have an account? Register")
         }

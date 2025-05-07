@@ -27,6 +27,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
+
+// handles the journal entry screen UI and logic
 @SuppressLint("MissingPermission")
 @Composable
 fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
@@ -37,6 +39,7 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // get the current location
     LaunchedEffect(Unit) {
         getLocation(context) { loc ->
             coroutineScope.launch {
@@ -48,6 +51,7 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
         }
     }
 
+    // layout of the screen using scaffold and column
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -70,6 +74,7 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // button to save the entry
             Button(
                 onClick = {
                     if (location == "Fetching location...") {
@@ -105,6 +110,7 @@ fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
     }
 }
 
+// gets last known location or gets a new one if it's not available
 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
 fun getLocation(context: Context, onLocationFound: (Location) -> Unit) {
     val fusedClient = LocationServices.getFusedLocationProviderClient(context)
@@ -135,7 +141,7 @@ fun getLocation(context: Context, onLocationFound: (Location) -> Unit) {
     }
 }
 
-
+// converts coordinates to a location string
 fun getLocationName(context: Context, lat: Double, lon: Double): String {
     return try {
         val geocoder = Geocoder(context, Locale.getDefault())

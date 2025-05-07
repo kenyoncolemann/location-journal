@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.location_journal.data.UserDatabase
 import com.example.location_journal.viewmodel.UserViewModel
 
+// sets up navigation for login and registration
 @Composable
 fun AuthNavHost(
     userViewModel: UserViewModel,

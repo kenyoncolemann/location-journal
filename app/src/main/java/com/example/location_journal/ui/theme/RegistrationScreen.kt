@@ -9,25 +9,29 @@ import com.example.location_journal.data.UserDao
 import com.example.location_journal.data.UserEntryItem
 import kotlinx.coroutines.launch
 
+// registration screen ui and logic
 @Composable
 fun RegistrationScreen(
     userDao: UserDao,
-    onRegistered: () -> Unit
+    onRegistered: () -> Unit // callback for successful registration
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
+    // layout for the form
     Column(Modifier.padding(24.dp)) {
         Text("Register", style = MaterialTheme.typography.headlineSmall)
 
         Spacer(Modifier.height(16.dp))
 
+        // inputs
         OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Username") })
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") })
 
         Spacer(Modifier.height(16.dp))
 
+        // register button, adds to db
         Button(onClick = {
             scope.launch {
                 val newUser = UserEntryItem(username = username, password = password)

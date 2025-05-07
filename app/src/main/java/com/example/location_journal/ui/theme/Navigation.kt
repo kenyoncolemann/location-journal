@@ -8,12 +8,14 @@ import com.example.location_journal.ProfileScreen
 import com.example.location_journal.viewmodel.JournalViewModel
 import com.example.location_journal.data.UserEntryItem
 
+// navigation between main screens
 @Composable
 fun Navigation(
     navController: NavHostController,
     viewModel: JournalViewModel,
-    currentUser: UserEntryItem // ✅ Accept the user passed from MainActivity
+    currentUser: UserEntryItem // logged in user
 ) {
+    // manages which screen is shown based on the current route
     NavHost(navController = navController, startDestination = "journal") {
         composable("journal") {
             JournalEntryScreen(viewModel = viewModel, user = currentUser)
