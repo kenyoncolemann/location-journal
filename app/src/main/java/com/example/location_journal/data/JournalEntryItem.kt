@@ -3,6 +3,7 @@ package com.example.location_journal.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// data class for journal entries
 @Entity(tableName = "journal_entries")
 data class JournalEntryItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

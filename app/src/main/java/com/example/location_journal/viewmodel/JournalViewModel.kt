@@ -14,17 +14,22 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import requestAbsaMoodList
 
+// view model for journal entries
 class JournalViewModel(application: Application) : AndroidViewModel(application) {
 
+    // dao for journal entries
     private val dao = JournalDatabase.getDatabase(application).journalDao()
 
+    // list of all entries
     val entries: StateFlow<List<JournalEntryItem>> = dao.getAllEntries()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    // get entries for a user
     fun getEntriesForUser(userId: Int): Flow<List<JournalEntryItem>> {
         return dao.getEntriesForUser(userId)
     }
 
+    // add or replace an entry
     fun addEntry(entry: JournalEntryItem) {
         viewModelScope.launch {
             try {
@@ -46,6 +51,7 @@ class JournalViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    // delete an entry
     fun deleteEntry(entry: JournalEntryItem) {
         viewModelScope.launch {
             dao.deleteEntry(entry)

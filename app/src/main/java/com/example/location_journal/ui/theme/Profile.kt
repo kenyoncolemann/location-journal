@@ -16,17 +16,19 @@ import androidx.compose.runtime.getValue
 import com.example.location_journal.data.JournalEntryItem
 import com.example.location_journal.data.UserEntryItem
 
-
+// shows the user's journal entries
 @Composable
 fun ProfileScreen(viewModel: JournalViewModel, user: UserEntryItem) {
+    // list of entries tied to the logged in user
     val entries by viewModel.getEntriesForUser(user.id).collectAsState(initial = emptyList())
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(user.username, style = MaterialTheme.typography.headlineMedium)
+        Text(user.username, style = MaterialTheme.typography.headlineMedium) // username
         Spacer(modifier = Modifier.height(8.dp))
         Text("Your saved journal entries:", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(16.dp))
 
+        // scrollable list of journal entries
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(entries) { entry ->
                 JournalEntryCard(
@@ -38,6 +40,7 @@ fun ProfileScreen(viewModel: JournalViewModel, user: UserEntryItem) {
     }
 }
 
+// single journal entry UI
 @Composable
 fun JournalEntryCard(entry: JournalEntryItem, onDelete: () -> Unit) {
     Card(
@@ -78,6 +81,7 @@ fun JournalEntryCard(entry: JournalEntryItem, onDelete: () -> Unit) {
     }
 }
 
+// helper function to get the top mood from a journal entry
 fun getTopMood(entry: JournalEntryItem): String {
     val moods = listOf(
         "Happy" to entry.happy,

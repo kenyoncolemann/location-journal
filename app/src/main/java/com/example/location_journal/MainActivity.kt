@@ -18,6 +18,7 @@ import com.example.location_journal.viewmodel.UserViewModel
 import android.Manifest
 
 class MainActivity : ComponentActivity() {
+    // view models to manage app state
     private val journalViewModel: JournalViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
 
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // check for location permissions, request if not
         if (hasLocationPermissions()) {
             launchAppContent()
         } else {
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
+    // checks whether location permissions have been granted
     private fun hasLocationPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
             this,
@@ -46,6 +48,7 @@ class MainActivity : ComponentActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    // launches the app content
     private fun launchAppContent() {
         setContent {
             LocationJournalTheme {
@@ -77,6 +80,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // handles the result of the permission request
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -87,12 +91,13 @@ class MainActivity : ComponentActivity() {
             grantResults.isNotEmpty() &&
             grantResults.all { it == PackageManager.PERMISSION_GRANTED }
         ) {
-            launchAppContent()
+            launchAppContent() // launch ui
         } else {
-            // You could show an error or close the app
+            // could exit or show error
         }
     }
 
+    //
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
