@@ -5,7 +5,6 @@ package com.example.location_journal.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.location_journal.analysis.SentimentAnalyzer
 import com.example.location_journal.data.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

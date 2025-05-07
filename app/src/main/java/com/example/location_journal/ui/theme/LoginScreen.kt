@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.location_journal.data.UserDao
@@ -18,8 +19,8 @@ fun LoginScreen(
     onLogin: (UserEntryItem) -> Unit, // callback for successful login
     onNavigateToRegister: () -> Unit // callback to registration
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 

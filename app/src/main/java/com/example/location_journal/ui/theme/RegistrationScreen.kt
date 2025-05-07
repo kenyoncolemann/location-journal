@@ -3,6 +3,7 @@ package com.example.location_journal.ui.theme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.location_journal.data.UserDao
@@ -15,8 +16,8 @@ fun RegistrationScreen(
     userDao: UserDao,
     onRegistered: () -> Unit // callback for successful registration
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     // layout for the form

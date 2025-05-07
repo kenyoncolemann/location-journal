@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import android.location.Geocoder
+import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -33,7 +34,7 @@ import java.util.Locale
 @Composable
 fun JournalEntryScreen(viewModel: JournalViewModel, user: UserEntryItem) {
     val context = LocalContext.current
-    var text by remember { mutableStateOf("") }
+    var text by rememberSaveable { mutableStateOf("") }
     var location by remember { mutableStateOf("Fetching location...") }
 
     val snackbarHostState = remember { SnackbarHostState() }
