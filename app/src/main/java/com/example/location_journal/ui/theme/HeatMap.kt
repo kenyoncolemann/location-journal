@@ -22,6 +22,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 
+// Create a class to store the emotion data
 @Serializable
 data class EmotionData(
     val data: Map<String, List<Double>>,
@@ -35,8 +36,10 @@ fun HeatMapScreen(viewModel: JournalViewModel, user: UserEntryItem) {
 
     LaunchedEffect(Unit) {
         try {
+            // Get all entries
             val entryList = viewModel.getEntriesForUser(user.id).first()
 
+            // Get all emotions
             val emotionData = EmotionData(
                 data = mapOf(
                     "Happy" to entryList.map { it.happy },
@@ -47,17 +50,21 @@ fun HeatMapScreen(viewModel: JournalViewModel, user: UserEntryItem) {
                 index = entryList.mapIndexed { i, _ -> "Journal ${i + 1}" }
             )
 
+            // Create the json and send to Client to send to server
             val json = Json.encodeToString(emotionData)
             val resultBitmap = requestHeatmapFromServer(json)
 
+            // Heatmap
             bitmap = resultBitmap
         } catch (e: Exception) {
-            error = "Failed to load heatmap: ${e.localizedMessage}"
+            error = "No entries to display"
         }
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
+
+            // Display the image on the screen
             bitmap != null -> {
                 Image(
                     bitmap = bitmap!!.asImageBitmap(),
@@ -65,6 +72,7 @@ fun HeatMapScreen(viewModel: JournalViewModel, user: UserEntryItem) {
                     modifier = Modifier.fillMaxWidth().padding(4.dp)
                 )
             }
+            // Error if the emotions have mismatched amounts of points
             error != null -> {
                 Text(text = error ?: "Unknown error", color = MaterialTheme.colorScheme.error)
             }

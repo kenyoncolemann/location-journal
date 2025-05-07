@@ -12,11 +12,14 @@ suspend fun requestHeatmapFromServer(json: String): Bitmap = withContext(Dispatc
 
     try {
         Log.d("HeatmapClient", "JSON: $json")
+
+        // Create the body of the POST
         val requestBody = RequestBody.create(
             "application/json".toMediaTypeOrNull(),
             json
         )
 
+        // Send the POST to the flask url
         val request = Request.Builder()
             .url("http://10.0.2.2:5050/heatmap")  // Flask default
             .post(requestBody)
@@ -26,13 +29,16 @@ suspend fun requestHeatmapFromServer(json: String): Bitmap = withContext(Dispatc
 
         val response = client.newCall(request).execute()
 
+        // Error message
         if (!response.isSuccessful) {
             Log.e("HeatmapClient", "Error: ${response.code} ${response.message}")
             throw Exception("Request failed with code ${response.code}")
         }
 
+
         val inputStream = response.body?.byteStream()
         if (inputStream != null) {
+            // Return the image
             return@withContext BitmapFactory.decodeStream(inputStream)
         } else {
             throw Exception("Empty response body")
@@ -52,11 +58,13 @@ suspend fun requestAbsaMoodList(journalText: String): List<Double> = withContext
             put("text", journalText)
         }
 
+        // Create the body
         val requestBody = RequestBody.create(
             "application/json".toMediaTypeOrNull(),
             payload.toString()
         )
 
+        // Send to flask server
         val request = Request.Builder()
             .url("http://10.0.2.2:5050/absa")
             .post(requestBody)
@@ -64,16 +72,19 @@ suspend fun requestAbsaMoodList(journalText: String): List<Double> = withContext
 
         val response = client.newCall(request).execute()
 
+        // Error message
         if (!response.isSuccessful) {
             throw Exception("Request failed with code ${response.code}")
         }
 
+        // Get the response
         val responseString = response.body?.string()
             ?: throw Exception("Empty response body")
 
         val json = JSONObject(responseString)
         val dataArray = json.getJSONArray("Data")
 
+        // Create and return the array of emotion data returned
         return@withContext List(dataArray.length()) { i ->
             dataArray.getDouble(i)
         }
