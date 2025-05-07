@@ -7,24 +7,14 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 
-suspend fun requestHeatmapFromServer(): Bitmap = withContext(Dispatchers.IO) {
+suspend fun requestHeatmapFromServer(json: String): Bitmap = withContext(Dispatchers.IO) {
     val client = OkHttpClient()
 
     try {
-        // 1. Create JSON payload - this will need to change
-        val payload = JSONObject().apply {
-            put("data", JSONObject(mapOf(
-                "Happy" to listOf(0.9f, 0.2f, 0.4f),
-                "Sad" to listOf(0.1f, 0.5f, 0.3f),
-                "Angry" to listOf(0.0f, 0.3f, 0.2f),
-                "Surprised" to listOf(0.5f, 0.6f, 0.7f)
-            )))
-            put("index", listOf("Scene 1", "Scene 2", "Scene 3"))
-        }
-
+        Log.d("HeatmapClient", "JSON: $json")
         val requestBody = RequestBody.create(
             "application/json".toMediaTypeOrNull(),
-            payload.toString()
+            json
         )
 
         val request = Request.Builder()
@@ -43,7 +33,7 @@ suspend fun requestHeatmapFromServer(): Bitmap = withContext(Dispatchers.IO) {
 
         val inputStream = response.body?.byteStream()
         if (inputStream != null) {
-            BitmapFactory.decodeStream(inputStream)
+            return@withContext BitmapFactory.decodeStream(inputStream)
         } else {
             throw Exception("Empty response body")
         }
